@@ -14,25 +14,24 @@ const els = {
   sort: qs('#sort'),
   count: qs('#resultCount'),
   detail: qs('#detail'),
+  status: qs('#workspaceStatus'),
   needs: qs('#needsAction'),
   overdue: qs('#overdueCount'),
   contact: qs('#contactGap'),
   docs: qs('#missingDocs')
 };
 
+function announce(message) {
+  els.status.textContent = '';
+  window.setTimeout(() => { els.status.textContent = message; }, 20);
+}
+
 function money(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0
-  }).format(value);
+  return new Intl.NumberFormat('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0}).format(value);
 }
 
 function shortDate(value) {
-  return new Date(value + 'T12:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  });
+  return new Date(value + 'T12:00:00').toLocaleDateString('en-US', {month:'short',day:'numeric'});
 }
 
 function urgency(claim) {
@@ -50,7 +49,6 @@ function urgency(claim) {
 
 function filteredClaims() {
   const query = els.search.value.toLowerCase().trim();
-
   const result = claims.filter((claim) => {
     const searchable = (claim.claimId + ' ' + claim.claimant).toLowerCase();
     if (query && !searchable.includes(query)) return false;
@@ -72,7 +70,6 @@ function filteredClaims() {
     if (sort === 'contact') return b.lastContactDays - a.lastContactDays;
     return urgency(b) - urgency(a);
   });
-
   return result;
 }
 
@@ -93,7 +90,7 @@ function renderRows() {
     tr.tabIndex = 0;
     tr.dataset.id = claim.claimId;
     tr.setAttribute('aria-label', 'Open ' + claim.claimId + ' for ' + claim.claimant);
-
+    tr.setAttribute('aria-selected', String(claim.claimId === selectedId));
     if (claim.claimId === selectedId) tr.classList.add('selected');
 
     tr.innerHTML =
@@ -110,8 +107,8 @@ function renderRows() {
       selectedId = claim.claimId;
       renderRows();
       renderDetail(claim);
+      announce(claim.claimId + ' opened in the detail workspace.');
     };
-
     tr.addEventListener('click', openClaim);
     tr.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -119,7 +116,6 @@ function renderRows() {
         openClaim();
       }
     });
-
     return tr;
   });
 
@@ -131,6 +127,10 @@ function renderDetail(claim) {
     ? claim.missingDocuments.map((doc) => '<li>○ ' + doc + '</li>').join('')
     : '<li class="muted">No missing documents identified</li>';
 
+  const sessionNote = claim.sessionNote
+    ? '<p class="session-note">' + claim.sessionNote + '</p>'
+    : '';
+
   els.detail.innerHTML =
     '<div class="detail-head">' +
       '<div><p>' + claim.claimId + '</p><h2>' + claim.claimant + '</h2><p>' + claim.lossType + ' · ' + claim.region + '</p></div>' +
@@ -139,6 +139,7 @@ function renderDetail(claim) {
     '<div class="next-card"><span>Next action</span><strong>' + claim.nextAction + '</strong><div>' +
       (claim.overdue ? 'This action is overdue.' : 'Due ' + shortDate(claim.dueDate) + '.') +
     '</div></div>' +
+    sessionNote +
     '<div class="detail-grid">' +
       '<div class="detail-box"><span>Stage</span><strong>' + claim.stage + '</strong></div>' +
       '<div class="detail-box"><span>Priority</span><strong>' + claim.priority + '</strong></div>' +
@@ -153,7 +154,10 @@ function renderDetail(claim) {
       '<li><strong>' + shortDate(claim.lastContact) + '</strong> · ' + claim.preferredContact + ' contact with claimant</li>' +
       '<li><strong>' + shortDate(claim.opened) + '</strong> · Claim opened from FNOL</li>' +
     '</ul></section>' +
-    '<div class="detail-actions"><button class="primary" type="button">Open claim file</button><button class="secondary" type="button">Log contact</button></div>';
+    '<div class="detail-actions">' +
+      '<button class="primary" type="button" data-detail-action="complete">Mark next action complete</button>' +
+      '<button class="secondary" type="button" data-detail-action="contact">Log contact</button>' +
+    '</div>';
 }
 
 function renderSummaries() {
@@ -169,19 +173,60 @@ function updateQuickButtons() {
   });
 }
 
-async function init() {
-  const response = await fetch('data/claims.json');
-  claims = await response.json();
+function selectedClaim() {
+  return claims.find((claim) => claim.claimId === selectedId);
+}
 
-  Array.from(new Set(claims.map((claim) => claim.stage))).sort().forEach((stage) => {
-    const option = document.createElement('option');
-    option.textContent = stage;
-    els.stage.append(option);
-  });
-
+function updateAfterAction(claim, message) {
   renderSummaries();
   renderRows();
-  updateQuickButtons();
+  renderDetail(claim);
+  announce(message);
+}
+
+els.detail.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-detail-action]');
+  if (!button) return;
+  const claim = selectedClaim();
+  if (!claim) return;
+
+  if (button.dataset.detailAction === 'contact') {
+    claim.lastContact = '2026-09-21';
+    claim.lastContactDays = 0;
+    claim.flags = claim.flags.filter((flag) => flag !== 'Contact gap');
+    claim.sessionNote = 'Contact logged in this demo session.';
+    updateAfterAction(claim, 'Contact logged for ' + claim.claimId + '.');
+  }
+
+  if (button.dataset.detailAction === 'complete') {
+    claim.overdue = false;
+    claim.flags = claim.flags.filter((flag) => flag !== 'Overdue action');
+    claim.dueDate = '2026-09-22';
+    claim.nextAction = 'Review claim updates';
+    claim.sessionNote = 'Previous next action marked complete in this demo session.';
+    updateAfterAction(claim, 'Next action completed for ' + claim.claimId + '.');
+  }
+});
+
+async function init() {
+  try {
+    const response = await fetch('data/claims.json');
+    if (!response.ok) throw new Error('Unable to load claims data.');
+    claims = await response.json();
+
+    Array.from(new Set(claims.map((claim) => claim.stage))).sort().forEach((stage) => {
+      const option = document.createElement('option');
+      option.textContent = stage;
+      els.stage.append(option);
+    });
+
+    renderSummaries();
+    renderRows();
+    updateQuickButtons();
+  } catch (error) {
+    els.count.textContent = 'Claims data unavailable';
+    announce('The synthetic claims dataset could not be loaded.');
+  }
 }
 
 ['search', 'priority', 'stage', 'line', 'flag', 'sort'].forEach((key) => {
@@ -210,6 +255,13 @@ qs('#clearFilters').addEventListener('click', () => {
   quickFilter = '';
   updateQuickButtons();
   renderRows();
+});
+
+document.querySelectorAll('.nav a:not(.active)').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    announce(link.textContent.trim() + ' is outside this My Work prototype scope.');
+  });
 });
 
 init();
