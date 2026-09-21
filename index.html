@@ -10,29 +10,54 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to claims queue</a>
+
 <header class="topbar">
-  <div class="brand"><div class="mark" aria-hidden="true">CM</div><div><strong>Cedarline Mutual</strong><span>Claims Operations</span></div></div>
-  <div class="user"><span class="prototype">UX portfolio prototype</span><div class="avatar" aria-hidden="true">AM</div><div><strong>Alex Morgan</strong><span>Claims Representative</span></div></div>
+  <div class="brand">
+    <div class="mark" aria-hidden="true">CM</div>
+    <div><strong>Cedarline Mutual</strong><span>Claims Operations</span></div>
+  </div>
+  <div class="user">
+    <span class="prototype">UX portfolio prototype</span>
+    <div class="avatar" aria-hidden="true">AM</div>
+    <div><strong>Alex Morgan</strong><span>Claims Representative</span></div>
+  </div>
 </header>
+
 <div class="app-shell">
   <nav class="nav" aria-label="Primary navigation">
-    <a class="active" href="#" aria-current="page">My Work</a><a href="#">Claims</a><a href="#">Calendar</a><a href="#">Documents</a><a href="#">Reports</a>
+    <a class="active" href="#" aria-current="page">My Work</a>
+    <a href="#">Claims</a>
+    <a href="#">Calendar</a>
+    <a href="#">Documents</a>
+    <a href="#">Reports</a>
   </nav>
+
   <main id="main">
+    <div id="workspaceStatus" class="sr-only" role="status" aria-live="polite"></div>
+
     <section class="page-heading">
-      <div><p class="eyebrow">My Work</p><h1>Claims that need attention</h1><p>Prioritized by visible operational signals—not a black-box score.</p></div>
+      <div>
+        <p class="eyebrow">My Work</p>
+        <h1>Claims that need attention</h1>
+        <p>Prioritized by visible operational signals—not a black-box score.</p>
+      </div>
       <div class="asof">Synthetic snapshot · <strong>Sep 21, 2026</strong></div>
     </section>
+
     <section class="stats" aria-label="Workload summary">
-      <button class="stat" data-quick="today" type="button"><span>Needs action</span><strong id="needsAction">0</strong><small>due today or overdue</small></button>
-      <button class="stat danger" data-quick="overdue" type="button"><span>Overdue</span><strong id="overdueCount">0</strong><small>past action due date</small></button>
-      <button class="stat" data-quick="contact" type="button"><span>Contact gap</span><strong id="contactGap">0</strong><small>7+ days since contact</small></button>
-      <button class="stat" data-quick="docs" type="button"><span>Missing docs</span><strong id="missingDocs">0</strong><small>waiting on evidence</small></button>
+      <button class="stat" data-quick="today" type="button" aria-pressed="false"><span>Needs action</span><strong id="needsAction">0</strong><small>due today or overdue</small></button>
+      <button class="stat danger" data-quick="overdue" type="button" aria-pressed="false"><span>Overdue</span><strong id="overdueCount">0</strong><small>past action due date</small></button>
+      <button class="stat" data-quick="contact" type="button" aria-pressed="false"><span>Contact gap</span><strong id="contactGap">0</strong><small>7+ days since contact</small></button>
+      <button class="stat" data-quick="docs" type="button" aria-pressed="false"><span>Missing docs</span><strong id="missingDocs">0</strong><small>waiting on evidence</small></button>
     </section>
+
     <section class="workspace">
       <div class="queue-card">
         <div class="toolbar">
-          <div class="search-wrap"><label for="search">Search claims</label><input id="search" type="search" placeholder="Claim number or claimant"></div>
+          <div class="search-wrap">
+            <label for="search">Search claims</label>
+            <input id="search" type="search" placeholder="Claim number or claimant">
+          </div>
           <div class="filters">
             <label>Priority<select id="priority"><option value="">All priorities</option><option>Critical</option><option>High</option><option>Normal</option><option>Low</option></select></label>
             <label>Stage<select id="stage"><option value="">All stages</option></select></label>
@@ -41,7 +66,12 @@
             <label>Sort<select id="sort"><option value="urgency">Operational urgency</option><option value="due">Due date</option><option value="age">Oldest claim</option><option value="contact">Longest contact gap</option></select></label>
           </div>
         </div>
-        <div class="queue-meta"><span id="resultCount" role="status" aria-live="polite">0 claims</span><button id="clearFilters" class="link-button" type="button">Clear filters</button></div>
+
+        <div class="queue-meta">
+          <span id="resultCount" role="status" aria-live="polite">0 claims</span>
+          <button id="clearFilters" class="link-button" type="button">Clear filters</button>
+        </div>
+
         <div class="table-wrap">
           <table>
             <thead><tr><th>Claim</th><th>Loss</th><th>Stage</th><th>Next action</th><th>Due</th><th>Last contact</th><th>Signals</th></tr></thead>
@@ -49,12 +79,18 @@
           </table>
         </div>
       </div>
+
       <aside class="detail" id="detail" aria-live="polite" aria-label="Selected claim details">
-        <div class="empty-detail"><div class="empty-icon" aria-hidden="true">↗</div><h2>Select a claim</h2><p>Open a file to review its next action, blockers, customer context, and recent activity.</p></div>
+        <div class="empty-detail">
+          <div class="empty-icon" aria-hidden="true">↗</div>
+          <h2>Select a claim</h2>
+          <p>Open a file to review its next action, blockers, customer context, and recent activity.</p>
+        </div>
       </aside>
     </section>
   </main>
 </div>
+
 <footer>Synthetic data only · Cedarline Mutual is a fictional UX portfolio concept.</footer>
 </body>
 </html>
