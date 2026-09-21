@@ -1,68 +1,130 @@
 # Cedarline Claims Operations Dashboard
 
-An internal **enterprise UX case study** for claims representatives managing a high-volume workload across auto and property claims.
+A working **enterprise UX case study** for claims representatives managing a high-volume mixed caseload.
 
 **Enterprise UX · Workflow design · Information architecture · Accessibility · Data-rich interfaces · HTML/CSS/JavaScript**
 
-> **Cedarline Mutual is fictional.** The 300-claim dataset is fully synthetic and contains no real customer or claim information.
+[**Live prototype**](https://joshuaokent-spec.github.io/Cedarline-Claims-Operations-Dashboard/) · [**Project brief**](docs/project-brief.md) · [**Heuristic evaluation**](docs/heuristic-evaluation.md)
+
+> **Cedarline Mutual is fictional.** The 300-claim dataset is synthetic and contains no real customer or claim information.
 
 ## At a glance
 
 | | |
 | --- | --- |
 | **Role** | UX Designer + front-end prototyper |
-| **Project type** | Rapid enterprise UX portfolio concept |
-| **Primary user** | Claims representative managing a mixed caseload |
-| **Core problem** | Help the rep identify what needs action next, why, and what information is needed |
-| **Prototype** | Searchable/filterable work queue + claim detail workspace |
-| **Dataset** | 300 synthetic auto/property claims |
-| **Tools / tech** | Figma, HTML, CSS, JavaScript, JSON, GitHub |
+| **Project type** | Rapid enterprise UX concept |
+| **Primary user** | Claims representative managing a mixed Auto/Property caseload |
+| **Core problem** | Identify what needs action next, why it needs attention, and what context is needed to act |
+| **Deliverables** | User/workflow hypothesis, task model, IA, interface standards, heuristic evaluation, accessibility review, coded prototype |
+| **Dataset** | 300 synthetic claims |
+| **Tools / tech** | HTML, CSS, JavaScript, JSON, GitHub Pages |
 
-## Project thesis
+## The problem
 
-Claims representatives do not primarily need “more charts.” They need to know:
+Claims representatives work across files at different stages: new intake, customer contact, inspections, estimates, coverage review, payment review, and repair follow-up.
 
-> **What needs my attention next, why does it need attention, and what information do I need to act?**
+A dashboard can easily become a pile of charts while the employee’s real question remains unanswered:
 
-The dashboard therefore prioritizes **action required** rather than decorative analytics.
+> **What needs my attention next, why, and what do I need before I can act?**
 
-The queue surfaces visible operational reasons for attention:
+## Design response
 
-- overdue actions;
-- customer-contact gaps;
-- missing documentation;
-- aging claims;
-- high-severity losses;
-- claim priority and stage.
+The prototype makes the **work queue** the primary surface.
 
-The prototype deliberately avoids an unexplained AI or risk score. Urgency is visible and inspectable.
+Visible operational signals explain why a claim deserves attention:
 
-## Why this complements Project 1
+- overdue action;
+- customer-contact gap;
+- missing documents;
+- high severity;
+- aging claim;
+- explicit priority and workflow stage.
 
-The [Cedarline Claim Reporting UX](https://github.com/joshuaokent-spec/cedarline-claim-reporting-ux) demonstrates customer-facing FNOL design.
+The interface deliberately avoids an unexplained “AI urgency score.” The sorting logic uses these signals internally, while the reasons remain visible to the user.
 
-This project tackles the other side of the workflow: **internal enterprise software used repeatedly by employees under time pressure.**
+## Core task loop
 
-Together, the projects demonstrate both customer-facing and employee-facing UX in the same insurance domain.
+```text
+Scan queue
+  → identify reason for attention
+  → select claim
+  → review next action + blockers
+  → act / log contact
+  → update state
+  → return to queue
+```
 
-## Current prototype
+The current prototype supports that loop directly. In-session actions can clear a contact gap or complete an overdue next action, and the queue/summaries update immediately.
 
-The working prototype includes:
+## Why this is enterprise UX rather than a generic dashboard
 
-- **My Work** dashboard;
-- action-based claim queue;
-- search by claimant or claim number;
-- filters for priority, stage, line of business, and operational signal;
-- sorting by operational urgency, due date, age, or contact gap;
-- quick filters for Needs Action, Overdue, Contact Gap, and Missing Documents;
+### Action before analytics
+The four summary cards are filters into work—not decorative KPI tiles.
+
+### Status and next action are separate
+“Inspection” tells the rep **where** the claim is. “Review field notes” tells them **what to do**.
+
+### Urgency is explainable
+Signals expose operational reasons instead of asking users to trust a hidden score.
+
+### Customer context stays nearby
+Claimant name, contact recency, preferred contact method, documents, and recent activity remain adjacent to operational data.
+
+### Dense, not cramped
+The layout accepts the information density of expert software while preserving stable columns, grouping, spacing, and hierarchy.
+
+## Working prototype
+
+The dashboard includes:
+
+- workload summaries that act as quick filters;
+- search by claim number or claimant;
+- priority, stage, line-of-business, and signal filters;
+- urgency, due-date, claim-age, and contact-gap sorting;
 - keyboard-openable claim rows;
-- selected-claim detail panel;
+- selected-state persistence;
+- detail workspace;
 - next-action context;
-- customer contact context;
-- missing-document list;
-- operational flags;
-- reserve/payment snapshot;
-- recent activity.
+- operational signals;
+- missing-document view;
+- financial snapshot;
+- recent activity;
+- functional **Log contact** and **Mark next action complete** demo actions;
+- responsive layout behavior.
+
+## Research integrity
+
+This is a rapid portfolio concept, not a live insurer engagement.
+
+I **do not claim** interviews with real claims representatives, access to internal carrier systems, or usability-study findings.
+
+The employee model and operational rules are documented as hypotheses that would need validation with claims professionals and business stakeholders.
+
+## Iteration evidence
+
+The repository includes a [heuristic evaluation & revision log](docs/heuristic-evaluation.md).
+
+Examples of issues addressed:
+
+- keeping the interface work-first instead of KPI-first;
+- showing reasons for urgency;
+- separating stage from next action;
+- making the detail actions functional rather than decorative;
+- adding reduced-motion support;
+- documenting dense-table accessibility tradeoffs.
+
+## Accessibility
+
+See [Accessibility Approach](docs/accessibility.md).
+
+The prototype includes a skip link, visible focus, native filters/buttons, live result/detail status, explicit overdue text, keyboard row activation, responsive layouts, and reduced-motion handling.
+
+The dense table remains a design tradeoff; a production version should validate an alternate list/card presentation at high zoom and narrow widths.
+
+## Interface standards
+
+See [Enterprise Interface Standards](docs/interface-standards.md) for the design rules behind workload summaries, signal badges, queue density, detail hierarchy, actions, and responsive behavior.
 
 ## Information architecture
 
@@ -74,46 +136,23 @@ My Work
 └── Selected claim workspace
     ├── Next action
     ├── Operational signals
-    ├── Claim/customer context
+    ├── Customer/contact context
     ├── Financial snapshot
     ├── Missing documents
     └── Recent activity
 ```
 
-The repeated task loop is:
+See [Information Architecture & Task Model](docs/information-architecture.md).
 
-**Scan queue → identify reason for attention → open claim → review context → act / schedule next action → update claim → return to queue**
+## Cedarline portfolio
 
-## Research integrity
+| Project | UX problem |
+| --- | --- |
+| [Project 1 — Claim Reporting](https://github.com/joshuaokent-spec/cedarline-claim-reporting-ux) | How should a customer report a loss? |
+| **Project 2 — Claims Operations** | How should an employee manage the work that follows? |
+| [Project 3 — Policy & Coverage IA](https://github.com/joshuaokent-spec/Cedarline-Policy-Coverage-IA) | How should customers find policy and coverage information? |
 
-This is a rapid portfolio concept, not a production engagement.
-
-I **do not claim** interviews with real claims representatives, access to internal insurer systems, or usability-study results.
-
-The internal-user model and workflow are documented as hypotheses to validate with claims subject-matter experts in a production project.
-
-## Design principles
-
-**Action before analytics**  
-Operational dashboards should lead with work to do, not vanity metrics.
-
-**Explain urgency**  
-A claim should never look urgent without showing the reason.
-
-**Status and next action are different**  
-“Inspection” describes where the claim is. “Review field notes” describes what the rep should do next.
-
-**Keep customer context nearby**  
-Efficiency should not make the claimant disappear behind IDs and status codes.
-
-**Dense, not cramped**  
-Enterprise software can carry substantial information, but grouping and hierarchy still need to reduce scanning effort.
-
-## Process artifacts
-
-- [Project brief](docs/project-brief.md)
-- [Information architecture & task model](docs/information-architecture.md)
-- [Figma case-study file](https://www.figma.com/design/a39WIHybdkzXWZ8kWQOGry)
+Together they demonstrate transactional UX, enterprise UX, and information architecture.
 
 ## Repository structure
 
@@ -124,46 +163,34 @@ Enterprise software can carry substantial information, but grouping and hierarch
 ├── app.js
 ├── data/
 │   └── claims.json
-└── docs/
-    ├── project-brief.md
-    └── information-architecture.md
+├── docs/
+│   ├── project-brief.md
+│   ├── information-architecture.md
+│   ├── heuristic-evaluation.md
+│   ├── accessibility.md
+│   └── interface-standards.md
+└── .github/
+    └── workflows/
+        └── validate.yml
 ```
 
 ## Run locally
-
-The prototype loads the synthetic dataset with `fetch()`, so serve the repository locally:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then open:
+Then open `http://localhost:8000`.
 
-```text
-http://localhost:8000
-```
+## What I would validate next
 
-## Next design passes
+In a production engagement I would test:
 
-The next iterations will focus on:
+- whether claims reps agree with the operational signals and sorting model;
+- whether they can scan the queue faster than their current workflow;
+- whether important claim context is missing from the detail workspace;
+- how often users need cross-claim/calendar/document workflows;
+- high-zoom and screen-reader alternatives to the table;
+- whether action completion and contact logging need confirmations, undo, or audit detail.
 
-1. task-based heuristic evaluation of the work queue;
-2. clearer queue-to-detail interaction states;
-3. claim-detail workflow depth;
-4. accessibility testing for the dense table experience;
-5. responsive alternatives for smaller screens;
-6. polished high-fidelity Figma screens;
-7. GitHub Pages deployment;
-8. a documented before/after iteration story.
-
-## Portfolio goal
-
-Project 1 answers:
-
-> **How should a customer report a loss?**
-
-Project 2 answers:
-
-> **How should a claims representative manage the work that follows?**
-
-That gives the Cedarline portfolio a connected end-to-end service story without turning the two projects into duplicates.
+The prototype is a design hypothesis designed to make those questions testable.
